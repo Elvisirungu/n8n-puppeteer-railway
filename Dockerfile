@@ -1,23 +1,12 @@
-# Use a standard Debian-based Node.js image
-FROM node:18-bullseye
-
-# Install Chromium and all required dependencies using apt-get with correct Debian package names
-RUN apt-get update && apt-get install -y \
-    chromium \
-    libnss3 \
-    libfreetype6 \
-    libharfbuzz0b \
-    fonts-freefont-ttf \
-    ca-certificates \
-    --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
-
-# Tell Puppeteer to use the system Chromium
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+# Use a base image that already includes Chromium and all required dependencies
+FROM node:18-bullseye-slim
 
 # Install n8n and the Puppeteer community node globally
 RUN npm install -g n8n n8n-nodes-puppeteer
+
+# Tell Puppeteer to use the system Chromium (it will use the one from the base image)
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 # Set the working directory for n8n
 WORKDIR /home/node/.n8n
