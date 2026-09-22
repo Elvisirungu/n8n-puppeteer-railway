@@ -1,18 +1,29 @@
-FROM docker.n8n.io/n8nio/n8n:latest
+# Use a standard Debian-based Node.js image (avoids the missing apk problem)
+FROM node:18-bullseye
 
-USER root
-
-# Install Chromium and required dependencies for Alpine Linux
-RUN apk add --no-cache \
+# Install Chromium and all required dependencies using apt-get
+RUN apt-get update && apt-get install -y \
     chromium \
     nss \
     freetype \
     harfbuzz \
     ca-certificates \
-    ttf-freefont
+    ttf-freefont \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
 
-# Tell Puppeteer to use the installed Chromium
+# Tell Puppeteer to use the system Chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-USER node
+# Install n8n and the Puppeteer community node globally
+RUN npm install -g n8n n8n-nodes-puppeteer
+
+# Set the working directory (this is where n8n looks for its data)
+WORKDIR /home/node/.n8n
+
+# Expose n8n's default port
+EXPOSE 5678
+
+# Start n8n
+CMD ["n8n"]
