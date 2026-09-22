@@ -1,17 +1,15 @@
-FROM n8nio/n8n:latest
+FROM docker.n8n.io/n8nio/n8n:latest
 
 USER root
 
-# Install Chromium and required dependencies for Debian
-RUN apt-get update && apt-get install -y \
+# Install Chromium and required dependencies for Alpine Linux
+RUN apk add --no-cache \
     chromium \
     nss \
     freetype \
     harfbuzz \
     ca-certificates \
-    ttf-freefont \
-    --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
+    ttf-freefont
 
 # Tell Puppeteer to use the installed Chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
