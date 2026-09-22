@@ -1,14 +1,14 @@
-# Use a standard Debian-based Node.js image (avoids the missing apk problem)
+# Use a standard Debian-based Node.js image
 FROM node:18-bullseye
 
-# Install Chromium and all required dependencies using apt-get
+# Install Chromium and all required dependencies using apt-get with correct Debian package names
 RUN apt-get update && apt-get install -y \
     chromium \
-    nss \
-    freetype \
-    harfbuzz \
+    libnss3 \
+    libfreetype6 \
+    libharfbuzz0b \
+    fonts-freefont-ttf \
     ca-certificates \
-    ttf-freefont \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
@@ -19,7 +19,7 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 # Install n8n and the Puppeteer community node globally
 RUN npm install -g n8n n8n-nodes-puppeteer
 
-# Set the working directory (this is where n8n looks for its data)
+# Set the working directory for n8n
 WORKDIR /home/node/.n8n
 
 # Expose n8n's default port
